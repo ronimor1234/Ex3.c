@@ -6,42 +6,30 @@
 #define TRUE 1
 #define FALSE 0
 
-
-
 typedef struct _node{
     struct _node *_next;
-    const char* _data;
-}Node;
+    const char* _data;}Node;
 
 typedef struct _StrList{
     Node *_head;
-    size_t _size;
-}StrList;
+    size_t _size;}StrList;
 
 Node* Node_alloc(const char* data){
     Node* p = (Node*)malloc(sizeof(Node));
     p->_data = data;
     p->_next = NULL;
-    return p;
-}
-
+    return p;}
 void Node_free(Node* n){free(n);}
-
 Node* Node_clone(Node* n){
-    char* str = "";
+    char* str = (char*)malloc(strlen(n->_data)*sizeof(char));
     strcpy(str, n->_data);
     Node* p = Node_alloc(str);
-    return p;
-}
-
-
-//List implemenation
+    return p;}
 StrList* StrList_alloc(){
     StrList* p = (StrList*)malloc(sizeof(StrList));
     p->_head = NULL;
     p->_size = 0;
-    return p;
-}
+    return p;}
 void StrList_free(StrList* slist){
     if(slist==NULL) return;
     Node* p1 = slist->_head;
@@ -51,10 +39,8 @@ void StrList_free(StrList* slist){
         p1=p1->_next;
         Node_free(p2);
     }
-    free(slist);
-}
+    free(slist);}
 size_t StrList_size(const StrList* slist){return slist->_size;}
-
 void StrList_insertLast(StrList* slist, const char* data){
     Node* p1 = slist->_head;
     while(p1->_next){
@@ -62,9 +48,7 @@ void StrList_insertLast(StrList* slist, const char* data){
     }
     Node* n = Node_alloc(data);
     p1->_next = n;
-    slist->_size++;
-}
-
+    slist->_size++;}
 void StrList_insertAt(StrList* slist, const char* data, int index){
     if(index>slist->_size || index<0){
         return;
@@ -82,24 +66,26 @@ void StrList_insertAt(StrList* slist, const char* data, int index){
     }
     Node* n = Node_alloc(data);
     n->_next = p1->_next;
-    p1->_next = n;
-}
+    p1->_next = n;}
+char* StrList_DataAt(const StrList* slist, int index){
+    Node *p1= slist->_head;
+    for(int i=0;i<index;i++){p1 = p1->_next;}
 
-char* StrList_DataAt(const StrList* slist, int index){//TODO
-    return "";
-}
 
+    char* ans = (char*)malloc(strlen(p1->_data)*sizeof(char));
+    strcpy(ans, p1->_data);
+    return ans;}
 char* StrList_firstData(const StrList* slist){
-    return StrList_DataAt(slist, 0);
-}
-
-void StrList_print(const StrList* slist){}//TODO
-
+    return StrList_DataAt(slist, 0);}
+void StrList_print(const StrList* slist){
+    if(slist->_size==0) return;
+    Node* p1 = slist->_head;
+    while(p1) {
+        printf("%s", p1->_data);
+    }}
 void StrList_printAt(const StrList* slist,int index){
     char* str = StrList_DataAt(slist, index);
-    printf("%s", str);
-}
-
+    printf("%s", str);}
 int StrList_printLen(const StrList* slist){
     if(slist->_size == 0)return 0;
     Node* p1 = slist->_head;
@@ -107,9 +93,7 @@ int StrList_printLen(const StrList* slist){
     while(p1){
         sumChars = sumChars + strlen(p1->_data);
     }
-    return sumChars;
-}
-
+    return sumChars;}
 int StrList_count(StrList* slist, const char* data){
     if(slist->_size == 0)return 0;
     Node* p1 = slist->_head;
@@ -118,9 +102,7 @@ int StrList_count(StrList* slist, const char* data){
         if(strcmp(data, p1->_data) == 0){count++;}
         p1 = p1->_next;
     }
-    return count;
-}
-
+    return count;}
 void StrList_remove(StrList* slist, const char* data){
     if(slist->_size == 0)return;
     Node* p1 = slist->_head;
@@ -133,8 +115,7 @@ void StrList_remove(StrList* slist, const char* data){
             slist->_size--;
         }
         p1 = p1->_next;
-    }
-}
+    }}
 void StrList_removeAt(StrList* slist, int index){
     if(index>slist->_size || index<0){
         return;
@@ -152,9 +133,7 @@ void StrList_removeAt(StrList* slist, int index){
     }
     Node* n = p1->_next;
     n->_next = p1->_next->_next;
-    Node_free(n);
-}
-
+    Node_free(n);}
 int StrList_isEqual(const StrList* StrList1, const StrList* StrList2){
     if(StrList1->_size != StrList2->_size)return FALSE;
     const Node* p1= StrList1->_head;
@@ -165,9 +144,7 @@ int StrList_isEqual(const StrList* StrList1, const StrList* StrList2){
         p1 = p1->_next;
         p2 = p2->_next;
     }
-    return TRUE;
-}
-
+    return TRUE;}
 StrList* StrList_clone(const StrList* slist){
     Node* p1 = slist->_head;
     StrList* newList = StrList_alloc();
@@ -180,9 +157,7 @@ StrList* StrList_clone(const StrList* slist){
         p1 = p1->_next;
         p2 = p2->_next;
     }
-    return newList;
-}
-
+    return newList;}
 void StrList_reverse( StrList* slist){
     Node* p1 = slist->_head;
     Node* p2 = p1->_next;
@@ -194,9 +169,7 @@ void StrList_reverse( StrList* slist){
         p1 = p2;
         p2 = p3;
         p3 = p3->_next;
-    }
-}
-
+    }}
 int StrList_isSorted(StrList* slist){
     Node* p1 = slist->_head;
     if(slist->_size==0)return TRUE;
@@ -204,8 +177,29 @@ int StrList_isSorted(StrList* slist){
         int condition = strcmp(p1->_data, p1->_next->_data);
         if(!condition)return FALSE;
     }
-    return TRUE;
-}
+    return TRUE;}
+void StrList_sort( StrList* slist){
+    if (slist->_size < 2) {
+        return;
+    }
 
-void StrList_sort( StrList* StrList);//TODO
+    int swapped;
+    Node *current;
+    Node *prev = NULL;
+    do {
+        swapped = FALSE;
+        current = slist->_head;
 
+        while (current->_next != prev) {
+            if (strcmp(current->_data, current->_next->_data) > 0) {
+                // Swap the data of the current node and the next node
+                const char* temp = current->_data;
+                current->_data = current->_next->_data;
+                current->_next->_data = temp;
+
+                swapped = TRUE;
+            }
+            current = current->_next;
+        }
+        prev = current;
+    } while (swapped);}
