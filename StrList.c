@@ -8,18 +8,25 @@
 
 typedef struct _node{
     struct _node *_next;
-    const char* _data;}Node;
+    char* _data;}Node;
 
 typedef struct _StrList{
     Node *_head;
-    size_t _size;}StrList;
+    size_t _size;
+    }StrList;
 
 Node* Node_alloc(const char* data){
+    char* str = (char*)malloc(strlen(data) + 1); 
+    if(str==NULL){printf("malloc failed");exit(1);}
+    strcpy(str, data);
     Node* p = (Node*)malloc(sizeof(Node));
-    p->_data = data;
+    p->_data = str;
     p->_next = NULL;
     return p;}
-void Node_free(Node* n){free(n);}
+void Node_free(Node* n){
+    free(n->_data);
+    free(n);
+}
 Node* Node_clone(Node* n){
     char* str = (char*)malloc(strlen(n->_data)*sizeof(char));
     strcpy(str, n->_data);
@@ -29,7 +36,8 @@ StrList* StrList_alloc(){
     StrList* p = (StrList*)malloc(sizeof(StrList));
     p->_head = NULL;
     p->_size = 0;
-    return p;}
+    return p;
+    }
 void StrList_free(StrList* slist){
     if(slist==NULL) return;
     Node* p1 = slist->_head;
@@ -43,6 +51,12 @@ void StrList_free(StrList* slist){
 size_t StrList_size(const StrList* slist){return slist->_size;}
 void StrList_insertLast(StrList* slist, const char* data){
     Node* p1 = slist->_head;
+    if(slist->_size == 0){
+        Node* n = Node_alloc(data);
+        slist->_head = n;
+        slist->_size++;
+        return;
+    }
     while(p1->_next){
         p1 = p1->_next;
     }
@@ -82,16 +96,21 @@ void StrList_print(const StrList* slist){
     Node* p1 = slist->_head;
     while(p1) {
         printf("%s", p1->_data);
-    }}
+        printf(" ");
+        p1 = p1->_next;
+    }
+    printf("\n");
+}
 void StrList_printAt(const StrList* slist,int index){
     char* str = StrList_DataAt(slist, index);
-    printf("%s", str);}
+    printf("%s\n", str);}
 int StrList_printLen(const StrList* slist){
     if(slist->_size == 0)return 0;
     Node* p1 = slist->_head;
     int sumChars = 0;
     while(p1){
         sumChars = sumChars + strlen(p1->_data);
+        p1 = p1->_next;
     }
     return sumChars;}
 int StrList_count(StrList* slist, const char* data){
@@ -114,8 +133,10 @@ void StrList_remove(StrList* slist, const char* data){
             Node_free(p2);
             slist->_size--;
         }
-        p1 = p1->_next;
-    }}
+        else p1 = p1->_next;
+    }
+    if(strcmp(data, slist->_head->_data) == 0)StrList_removeAt(slist,0);
+}
 void StrList_removeAt(StrList* slist, int index){
     if(index>slist->_size || index<0){
         return;
@@ -132,7 +153,7 @@ void StrList_removeAt(StrList* slist, int index){
         p1 = p1->_next;
     }
     Node* n = p1->_next;
-    n->_next = p1->_next->_next;
+    p1->_next = p1->_next->_next;
     Node_free(n);}
 int StrList_isEqual(const StrList* StrList1, const StrList* StrList2){
     if(StrList1->_size != StrList2->_size)return FALSE;
@@ -158,24 +179,27 @@ StrList* StrList_clone(const StrList* slist){
         p2 = p2->_next;
     }
     return newList;}
-void StrList_reverse( StrList* slist){
+void StrList_reverse(StrList* slist){
+    if(slist->_size < 2) return;
+
     Node* p1 = slist->_head;
     Node* p2 = p1->_next;
-    Node* p3 = p2->_next;
     p1->_next = NULL;
 
-    while(p2){
-        p2->_next = p1;
-        p1 = p2;
-        p2 = p3;
-        p3 = p3->_next;
-    }}
+    while(p2 != NULL){ 
+        Node* p3 = p2->_next; 
+        p2->_next = p1; 
+        p1 = p2; 
+        p2 = p3; 
+    }
+    slist->_head = p1;
+}
 int StrList_isSorted(StrList* slist){
     Node* p1 = slist->_head;
-    if(slist->_size==0)return TRUE;
+    if(slist->_size<2)return TRUE;
     while(p1->_next){
-        int condition = strcmp(p1->_data, p1->_next->_data);
-        if(!condition)return FALSE;
+        if (strcmp(p1->_data, p1->_next->_data) > 0)return FALSE;
+        p1 = p1->_next;
     }
     return TRUE;}
 void StrList_sort( StrList* slist){
@@ -193,7 +217,7 @@ void StrList_sort( StrList* slist){
         while (current->_next != prev) {
             if (strcmp(current->_data, current->_next->_data) > 0) {
                 // Swap the data of the current node and the next node
-                const char* temp = current->_data;
+                char* temp = current->_data;
                 current->_data = current->_next->_data;
                 current->_next->_data = temp;
 
