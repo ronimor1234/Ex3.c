@@ -13,23 +13,24 @@ char flush_buffer(){
     char c;while ((c = getchar()) != '\n' && c != EOF) {}
     return c;
 }
-// char* reciveLine(){
-//     clean_buffer();
-//     char nextChar;
-//     char* str_ans = (char*)malloc(sizeof(char)*2);
-//     if(str_ans == NULL){
-//         exit(1);
+// char* reciveLine(int * should_flush){
+//     char* str_ans = (char*)malloc(2*sizeof(char));
+//     str_ans[0] = '\0';
+//     str_ans[1] = '\0';
+//     char nextChar = '\0';
+//     if(*should_flush){
+//         nextChar = flush_buffer();
+//         *sould_flush = 0;
 //     }
-//     str_ans[0] = '\0';  
-//     nextChar = fgetc(stdin);
+//     else nextChar = getchar();
+//     while(nextChar == '\n')nextChar = getchar();
 //     while(nextChar != '\n'){
-//         str_ans = (char*)realloc(str_ans, strlen(str_ans)+2*sizeof(char));
-//         nextChar = getchar();
 //         int len = strlen(str_ans);
+//         str_ans = (char*)realloc(str_ans, len + 2*sizeof(char));
 //         str_ans[len] = nextChar;
-//         str_ans[len+1] = '\0';
+//         str_ans[len + 1] = '\0';
+//         nextChar = getchar();
 //     }
-//     printf("line recived: %s\n", str_ans);
 //     return str_ans;
 // }
 
@@ -45,14 +46,14 @@ char flush_buffer(){
 
 
 
-char* readWord(int* sould_flush){
+char* readWord(int* should_flush){
     char* str_ans = (char*)malloc(2*sizeof(char));
     str_ans[0] = '\0';
     str_ans[1] = '\0';
     char nextChar = '\0';
-    if(*sould_flush){
+    if(*should_flush){
         nextChar = flush_buffer();
-        *sould_flush = 0;
+        *should_flush = 0;
     }
     else nextChar = getchar();
     while(nextChar == '\n')nextChar = getchar();
@@ -120,7 +121,6 @@ int main(){
                 break;
             case 8:
                 char* strToDelete = readWord(&first_flush);
-                printf("inputing to delete : %s", strToDelete);
                 StrList_remove(mySL, strToDelete);
                 break;
             case 9: 
